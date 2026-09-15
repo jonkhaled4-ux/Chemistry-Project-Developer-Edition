@@ -1033,7 +1033,6 @@
             </div>
 
             <div class="cockpit-panel-container">
-                <!-- شاشة عرض الرسائل التعليمية في أعلى لوحة التحكم -->
                 <div class="cockpit-info-screen" id="cockpit-info-box">
                     📡 لوحة التحكم جاهزة. اضغط على أزرار الأنظمة بالترتيب للاستماع للتقارير الفنية وقراءة الشرح.
                 </div>
@@ -1179,7 +1178,6 @@
     let lastPenetratedLayer = ""; 
     let isExperimentStarted = false; 
 
-    // النصوص التعليمية المقررة والمقترحة لأزرار قمرة القيادة
     const cockpitData = {
         1: {
             text: "⚙️ [تفعيل المؤكسد]: في الفضاء الخارجي لا يوجد هواء، لذلك يحمل الصاروخ مؤكسدًا كيميائيًا (مثل الأكسجين السائل) ليمتزج مع الوقود ويسمح بحدوث عملية الاحتراق الهائل وتوليد الدفع.",
@@ -2186,6 +2184,7 @@
         playSuccessSound();
     }
 
+    // إعادة المحاكاة لتتم بالعودة التامة لصفحة الترحيب الرئيسية
     function restartEntireProject() {
         initAudio();
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
@@ -2230,6 +2229,9 @@
         `;
 
         document.getElementById('final-screen').classList.add('hidden');
+        
+        // إظهار شاشة الترحيب الرئيسية مجدداً
+        document.getElementById('start-overlay').style.display = 'flex';
         goToSlide(0);
     }
 
