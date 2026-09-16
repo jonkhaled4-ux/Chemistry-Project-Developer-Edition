@@ -837,6 +837,8 @@
             justify-content: center;
             margin-top: 20px;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 150;
         }
 
         .btn-restart {
@@ -851,6 +853,7 @@
             border-radius: 30px;
             box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
             transition: all 0.3s;
+            pointer-events: auto;
         }
 
         .btn-restart:hover {
@@ -872,6 +875,7 @@
             border-radius: 30px;
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
             transition: all 0.3s;
+            pointer-events: auto;
         }
 
         .btn-exit:hover {
@@ -892,6 +896,7 @@
 <audio id="cockpit-audio-1" src="story_audio2.mp3" preload="auto"></audio>
 <audio id="cockpit-audio-2" src="story_audio3.mp3" preload="auto"></audio>
 <audio id="cockpit-audio-3" src="story_audio4.mp3" preload="auto"></audio>
+<audio id="welcome-tala-audio" src="story_audio5.mp3" preload="auto"></audio>
 
 <div id="viewport">
 
@@ -1201,6 +1206,7 @@
 
     const storyAudio = document.getElementById('story-audio-player');
     const alertAudio = document.getElementById('story-audio-alert');
+    const welcomeTalaAudio = document.getElementById('welcome-tala-audio');
     const cockpitAudio1 = document.getElementById('cockpit-audio-1');
     const cockpitAudio2 = document.getElementById('cockpit-audio-2');
     const cockpitAudio3 = document.getElementById('cockpit-audio-3');
@@ -1226,6 +1232,7 @@
             if (audioCtx) audioCtx.suspend();
             if (storyAudio) storyAudio.muted = true;
             if (alertAudio) alertAudio.muted = true;
+            if (welcomeTalaAudio) welcomeTalaAudio.muted = true;
             if (cockpitAudio1) cockpitAudio1.muted = true;
             if (cockpitAudio2) cockpitAudio2.muted = true;
             if (cockpitAudio3) cockpitAudio3.muted = true;
@@ -1234,6 +1241,7 @@
             if (audioCtx) audioCtx.resume();
             if (storyAudio) storyAudio.muted = false;
             if (alertAudio) alertAudio.muted = false;
+            if (welcomeTalaAudio) welcomeTalaAudio.muted = false;
             if (cockpitAudio1) cockpitAudio1.muted = false;
             if (cockpitAudio2) cockpitAudio2.muted = false;
             if (cockpitAudio3) cockpitAudio3.muted = false;
@@ -1244,6 +1252,13 @@
         if (alertAudio) {
             alertAudio.pause();
             alertAudio.currentTime = 0;
+        }
+    }
+
+    function stopWelcomeTalaAudio() {
+        if (welcomeTalaAudio) {
+            welcomeTalaAudio.pause();
+            welcomeTalaAudio.currentTime = 0;
         }
     }
 
@@ -1305,11 +1320,16 @@
 
     function playWelcomeTala() {
         initAudio();
-        speakComputerVoice("Welcome astronaut Tala. Cockpit sealed successfully.");
+        stopWelcomeTalaAudio();
+        if (welcomeTalaAudio && !isAudioMuted) {
+            welcomeTalaAudio.currentTime = 0;
+            welcomeTalaAudio.play().catch(e => console.log(e));
+        }
     }
 
     function startSystemWithAudio() {
         initAudio();
+        stopWelcomeTalaAudio(); 
         isExperimentStarted = true; 
         rocketProgress = 0; 
         lastPenetratedLayer = "";
@@ -1550,6 +1570,7 @@
     function toggleCockpitSystem(sysId) {
         initAudio();
         stopAllCockpitAudios();
+        stopWelcomeTalaAudio();
 
         cockpitSystems[sysId] = !cockpitSystems[sysId];
         const btn = document.getElementById(`cp-btn-${sysId}`);
@@ -1643,6 +1664,7 @@
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         stopStoryAudio();
         stopAlertAudio();
+        stopWelcomeTalaAudio();
         stopAllCockpitAudios();
 
         if (slideIndex !== 0) {
@@ -2173,6 +2195,7 @@
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         stopStoryAudio();
         stopAlertAudio();
+        stopWelcomeTalaAudio();
         stopAllCockpitAudios();
 
         isFinalScreenReached = true;
@@ -2184,12 +2207,12 @@
         playSuccessSound();
     }
 
-    // إعادة المحاكاة لتتم بالعودة التامة لصفحة الترحيب الرئيسية
     function restartEntireProject() {
         initAudio();
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         stopStoryAudio();
         stopAlertAudio();
+        stopWelcomeTalaAudio();
         stopAllCockpitAudios();
         stopAmbientSpaceSound();
 
@@ -2230,7 +2253,7 @@
 
         document.getElementById('final-screen').classList.add('hidden');
         
-        // إظهار شاشة الترحيب الرئيسية مجدداً
+        // إظهار شاشة الترحيب الرئيسية مجدداً للبدء من جديد
         document.getElementById('start-overlay').style.display = 'flex';
         goToSlide(0);
     }
@@ -2239,6 +2262,7 @@
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         stopStoryAudio();
         stopAlertAudio();
+        stopWelcomeTalaAudio();
         stopAllCockpitAudios();
         stopAmbientSpaceSound();
         playBeep(300, 'sawtooth', 0.3);
